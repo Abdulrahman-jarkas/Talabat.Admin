@@ -1,0 +1,41 @@
+<div class="customer-cart">
+  <h2>My Cart</h2>
+
+  @if (message()) {
+    <div class="alert alert-warning">{{ message() }}</div>
+  }
+
+  @if (loading()) {
+    <p>Loading...</p>
+  }
+
+  @if (!loading() && !cart()) {
+    <p class="text-muted">Your cart is empty.</p>
+  }
+
+  @if (cart(); as c) {
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Product ID</th>
+          <th>Quantity</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of c.items; track item.productId) {
+          <tr>
+            <td>{{ item.productId }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>
+              <button class="btn btn-danger btn-sm" (click)="removeItem(item.productId)">Remove</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <button class="btn btn-primary" (click)="goToCheckout()" [disabled]="c.items.length === 0">
+      Go to Checkout
+    </button>
+  }
+</div>

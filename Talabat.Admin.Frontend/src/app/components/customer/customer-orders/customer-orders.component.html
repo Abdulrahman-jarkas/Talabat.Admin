@@ -1,0 +1,45 @@
+<div class="customer-orders">
+  <h2>My Orders</h2>
+
+  @if (message()) {
+    <div class="alert alert-info">{{ message() }}</div>
+  }
+
+  @if (loading()) {
+    <p>Loading...</p>
+  }
+
+  @if (!loading() && orders().length === 0) {
+    <p class="text-muted">No orders yet.</p>
+  }
+
+  @if (orders().length > 0) {
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Shop</th>
+          <th>Status</th>
+          <th>Payment</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (order of orders(); track order.orderId) {
+          <tr>
+            <td>{{ order.orderId | slice:0:8 }}...</td>
+            <td>{{ order.shopId | slice:0:8 }}...</td>
+            <td><span class="badge bg-secondary">{{ order.status }}</span></td>
+            <td><span class="badge bg-info">{{ order.paymentStatus }}</span></td>
+            <td>
+              <button class="btn btn-warning btn-sm" (click)="cancelOrder(order.orderId)"
+                [disabled]="order.status === 'Cancelled' || order.status === 'Delivered'">
+                Cancel
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

@@ -1,0 +1,69 @@
+<div class="checkout">
+  <h2>Checkout</h2>
+
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <p>Loading checkout session...</p>
+  } @else if (paymentResult()) {
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Payment Ready</h5>
+        <p><strong>Payment ID:</strong> {{ paymentResult()!.paymentId }}</p>
+        <a [href]="paymentResult()!.paymentUrl" class="btn btn-primary" target="_blank">
+          Go to Payment
+        </a>
+      </div>
+    </div>
+  } @else if (session()) {
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Order Summary</h5>
+        <p><strong>Shop ID:</strong> {{ session()!.shopId }}</p>
+        <table class="table table-sm">
+          <thead>
+            <tr><th>Product</th><th>Qty</th><th>Price</th></tr>
+          </thead>
+          <tbody>
+            @for (item of session()!.items; track item.productId) {
+              <tr>
+                <td>{{ item.productId }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price | number:'1.2-2' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <p class="fw-bold">Total: {{ session()!.totalPrice | number:'1.2-2' }}</p>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Select Address</h5>
+        @if (addresses().length === 0) {
+          <p class="text-muted">No addresses found. Please add one in your profile.</p>
+        } @else {
+          <select class="form-select" (change)="selectedAddressId.set($any($event.target).value)">
+            <option value="">-- Select an address --</option>
+            @for (addr of addresses(); track addr.id) {
+              <option [value]="addr.id">{{ addr.address }}</option>
+            }
+          </select>
+        }
+      </div>
+    </div>
+
+    <button class="btn btn-success me-2"
+            (click)="checkout()"
+            [disabled]="checkingOut() || !selectedAddressId()">
+      {{ checkingOut() ? 'Processing...' : 'Checkout' }}
+    </button>
+    <button class="btn btn-outline-secondary" (click)="backToCart()">Back to Cart</button>
+  } @else {
+    <p class="text-muted">No active checkout session found.</p>
+    <button class="btn btn-outline-secondary" (click)="backToCart()">Back to Cart</button>
+  }
+</div>

@@ -1,0 +1,118 @@
+<div class="container mt-3">
+  <h2>Accounts Management</h2>
+
+  @if (error) {
+    <div class="alert alert-danger alert-dismissible">{{ error }}
+      <button type="button" class="btn-close" (click)="error = null"></button>
+    </div>
+  }
+  @if (successMsg) {
+    <div class="alert alert-success alert-dismissible">{{ successMsg }}
+      <button type="button" class="btn-close" (click)="successMsg = null"></button>
+    </div>
+  }
+
+  <div class="mb-3">
+    <button class="btn btn-primary btn-sm" *hasPermission="'accounts.add'" (click)="openCreate()">+ New Account</button>
+    <button class="btn btn-outline-secondary btn-sm ms-2" (click)="load()">Refresh</button>
+  </div>
+
+  <!-- Create / Edit Form -->
+  @if (showForm) {
+    <div class="card mb-3">
+      <div class="card-header">{{ editingAccountId ? 'Edit Account' : 'New Account' }}</div>
+      <div class="card-body">
+        @if (!editingAccountId) {
+          <div class="mb-2">
+            <label class="form-label">User ID (GUID)</label>
+            <input class="form-control form-control-sm" [(ngModel)]="formUserId" />
+          </div>
+          @if (isAdmin) {
+            <div class="mb-2">
+              <label class="form-label">Tenant Type</label>
+              <select class="form-select form-select-sm" [(ngModel)]="formTenantType" (ngModelChange)="onTenantTypeChange()">
+                <option value="System">System</option>
+                <option value="Shop">Shop</option>
+                <option value="Customer">Customer</option>
+              </select>
+            </div>
+            @if (formTenantType === 'Shop') {
+              <div class="mb-2">
+                <label class="form-label">Shop</label>
+                <select class="form-select form-select-sm" [(ngModel)]="formTenantId" (ngModelChange)="onShopChange()">
+                  <option value="" disabled>Select a shop</option>
+                  @for (shop of shops; track shop.id) {
+                    <option [value]="shop.id">{{ shop.name }}</option>
+                  }
+                </select>
+              </div>
+            }
+          }
+        } @else {
+          @if (isAdmin) {
+            <div class="mb-2">
+              <label class="form-label">Tenant Type</label>
+              <input class="form-control form-control-sm" [value]="formTenantType" disabled />
+            </div>
+            @if (formTenantType === 'Shop') {
+              <div class="mb-2">
+                <label class="form-label">Shop</label>
+                <input class="form-control form-control-sm" [value]="editingShopName" disabled />
+              </div>
+            }
+          }
+        }
+        <div class="mb-2">
+          <label class="form-label">Roles</label>
+          <div>
+            @for (role of roles; track role.id) {
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox"
+                       [checked]="formRoleIds.includes(role.id)"
+                       (change)="toggleRole(role.id)" />
+                <label class="form-check-label">{{ role.name }}</label>
+              </div>
+            }
+          </div>
+        </div>
+        <button class="btn btn-success btn-sm" (click)="save()">Save</button>
+        <button class="btn btn-secondary btn-sm ms-2" (click)="cancelForm()">Cancel</button>
+      </div>
+    </div>
+  }
+
+  <!-- Accounts Table -->
+  @if (loading) {
+    <p>Loading...</p>
+  } @else {
+    <table class="table table-sm table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          @if (isAdmin) { <th>Tenant</th> }
+          <th>Roles</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (a of accounts; track a.id) {
+          <tr>
+            <td>{{ a.name }}</td>
+            <td>{{ a.email }}</td>
+            @if (isAdmin) { <td>{{ a.tenantType }}</td> }
+            <td>
+              @for (r of a.assignments; track r.roleId) {
+                <span class="badge bg-info text-dark me-1">{{ r.roleName || r.roleId }}</span>
+              }
+            </td>
+            <td>
+              <button class="btn btn-outline-primary btn-sm me-1" *hasPermission="'accounts.update'" (click)="openEdit(a)">Edit</button>
+              <button class="btn btn-outline-danger btn-sm" *hasPermission="'accounts.remove'" (click)="deleteAccount(a)">Delete</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

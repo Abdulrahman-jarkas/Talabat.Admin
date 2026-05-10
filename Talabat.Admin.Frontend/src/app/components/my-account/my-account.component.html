@@ -1,0 +1,103 @@
+<div class="container mt-4" style="max-width: 800px;">
+  <!-- Header -->
+  <div class="d-flex align-items-center mb-4">
+    <div>
+      <h2 class="mb-0">My Accounts</h2>
+      <p class="text-muted mb-0">Switch between your accounts to change your active role and permissions.</p>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  @if (error) {
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+      <span class="me-2">⚠️</span>
+      <div class="flex-grow-1">{{ error }}</div>
+      <button type="button" class="btn-close" (click)="error = null"></button>
+    </div>
+  }
+  @if (successMsg) {
+    <div class="alert alert-success d-flex align-items-center" role="alert">
+      <span class="me-2">✓</span>
+      <div class="flex-grow-1">{{ successMsg }}</div>
+      <button type="button" class="btn-close" (click)="successMsg = null"></button>
+    </div>
+  }
+
+  <!-- Loading -->
+  @if (loading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="text-muted mt-2">Loading your accounts...</p>
+    </div>
+  } @else if (accounts.length === 0) {
+    <div class="text-center py-5">
+      <p class="text-muted fs-5">No accounts found.</p>
+    </div>
+  } @else {
+    <!-- Account List -->
+    <div class="list-group">
+      @for (account of accounts; track account.id) {
+        <div class="list-group-item list-group-item-action p-3"
+             [class.border-primary]="isActive(account)"
+             [class.bg-primary-subtle]="isActive(account)"
+             [style.cursor]="isActive(account) ? 'default' : 'pointer'"
+             [style.transition]="'all 0.2s ease'"
+             (click)="switchAccount(account)">
+          <div class="d-flex align-items-center">
+            <!-- Icon -->
+            <div class="me-3 fs-3" style="width: 44px; text-align: center;">
+              {{ getTenantIcon(account.tenantType) }}
+            </div>
+
+            <!-- Info -->
+            <div class="flex-grow-1">
+              <div class="d-flex align-items-center mb-1">
+                <h6 class="mb-0 me-2">{{ account.name }}</h6>
+                <span class="badge rounded-pill"
+                      [class.bg-primary]="account.tenantType === 'System'"
+                      [class.bg-success]="account.tenantType === 'Shop'"
+                      [class.bg-info]="account.tenantType === 'Customer'">
+                  {{ account.tenantType }}
+                </span>
+              </div>
+
+              <!-- Roles -->
+              @if (account.roles.length > 0) {
+                <div class="d-flex flex-wrap gap-1">
+                  @for (role of account.roles; track role.roleId) {
+                    <span class="badge bg-light text-dark border" style="font-size: 0.7rem;">
+                      {{ role.roleName || 'Role' }}
+                    </span>
+                  }
+                </div>
+              } @else {
+                <small class="text-muted">No roles assigned</small>
+              }
+            </div>
+
+            <!-- Action / Status -->
+            <div class="ms-3 text-end" style="min-width: 100px;">
+              @if (isActive(account)) {
+                <span class="badge bg-primary px-3 py-2">
+                  ✓ Active
+                </span>
+              } @else if (isSwitching(account)) {
+                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                <small class="text-muted d-block mt-1">Switching...</small>
+              } @else {
+                <span class="text-primary small fw-medium">
+                  Switch →
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Hint -->
+    <p class="text-muted small mt-3 text-center">
+      Click on an account to switch. Your navigation and permissions will update automatically.
+    </p>
+  }
+</div>

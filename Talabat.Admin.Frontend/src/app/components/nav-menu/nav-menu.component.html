@@ -1,0 +1,89 @@
+<header>
+  <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <div class="container">
+      <a class="navbar-brand" routerLink="/my-account">Talabat</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target=".navbar-collapse"
+        aria-label="Toggle navigation"
+        [attr.aria-expanded]="isExpanded"
+        (click)="toggle()">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div
+        class="navbar-collapse collapse d-sm-inline-flex justify-content-end"
+        [class.show]="isExpanded">
+        <ul class="navbar-nav flex-grow">
+          @if (authenticated()) {
+            <!-- Customer nav -->
+            @if (isCustomer()) {
+              <li class="nav-item" routerLinkActive="active">
+                <a class="nav-link text-dark" routerLink="/customer/shops">Shops</a>
+              </li>
+              <li class="nav-item" routerLinkActive="active">
+                <a class="nav-link text-dark" routerLink="/customer/cart">Cart</a>
+              </li>
+              <li class="nav-item" routerLinkActive="active">
+                <a class="nav-link text-dark" routerLink="/customer/orders">My Orders</a>
+              </li>
+              <li class="nav-item" routerLinkActive="active">
+                <a class="nav-link text-dark" routerLink="/customer/profile">Profile</a>
+              </li>
+            }
+
+            <!-- Admin nav -->
+            @if (isAdmin()) {
+              <li class="nav-item" routerLinkActive="active" *hasPermission="'accounts.view'">
+                <a class="nav-link text-dark" routerLink="/admin/accounts">Accounts</a>
+              </li>
+              <li class="nav-item" routerLinkActive="active" *hasPermission="'accounts.roles.view'">
+                <a class="nav-link text-dark" routerLink="/admin/roles">Roles</a>
+              </li>
+              <li class="nav-item" routerLinkActive="active" *hasPermission="'shops.list'">
+                <a class="nav-link text-dark" routerLink="/admin/shops">Shops</a>
+              </li>
+              <li class="nav-item" routerLinkActive="active" *hasPermission="'products.read'">
+                <a class="nav-link text-dark" routerLink="/admin/products">Products</a>
+              </li>
+              <li class="nav-item" routerLinkActive="active" *hasPermission="'orders.read'">
+                <a class="nav-link text-dark" routerLink="/admin/orders">Orders</a>
+              </li>
+            }
+
+            <!-- Shop nav -->
+            @if (isShop()) {
+              <li class="nav-item" routerLinkActive="active" *hasPermission="'accounts.view'">
+                <a class="nav-link text-dark" routerLink="/shop/accounts">Accounts</a>
+              </li>
+              <li class="nav-item" routerLinkActive="active" *hasPermission="'accounts.roles.view'">
+                <a class="nav-link text-dark" routerLink="/shop/roles">Roles</a>
+              </li>
+              <li class="nav-item" routerLinkActive="active" *hasPermission="'products.read'">
+                <a class="nav-link text-dark" routerLink="/shop/products">Products</a>
+              </li>
+              <li class="nav-item" routerLinkActive="active" *hasPermission="'orders.read'">
+                <a class="nav-link text-dark" routerLink="/shop/orders">Orders</a>
+              </li>
+            }
+
+            <li class="nav-item" routerLinkActive="active">
+              <a class="nav-link text-dark" routerLink="/my-account">Switch Account</a>
+            </li>
+            <li class="nav-item">
+              <span class="nav-link text-dark">{{ username() }}</span>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-dark" [href]="logoutUrl()">Sign Out</a>
+            </li>
+          } @else {
+            <li class="nav-item">
+              <a class="nav-link text-dark" href="/bff/login">Login</a>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>

@@ -1,0 +1,60 @@
+<div class="container mt-4" style="max-width: 700px;">
+  <h2>My Profile</h2>
+  <p class="text-muted">Manage your delivery addresses.</p>
+
+  @if (errorMsg()) {
+    <div class="alert alert-danger d-flex align-items-center">
+      <span class="me-2">⚠️</span>
+      <div class="flex-grow-1">{{ errorMsg() }}</div>
+      <button type="button" class="btn-close" (click)="errorMsg.set('')"></button>
+    </div>
+  }
+  @if (message()) {
+    <div class="alert alert-success d-flex align-items-center">
+      <span class="me-2">✓</span>
+      <div class="flex-grow-1">{{ message() }}</div>
+      <button type="button" class="btn-close" (click)="message.set('')"></button>
+    </div>
+  }
+
+  <!-- Add Address -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h6 class="card-title">Add New Address</h6>
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Enter address..."
+               [ngModel]="newAddress()" (ngModelChange)="newAddress.set($event)"
+               (keyup.enter)="addAddress()" />
+        <button class="btn btn-primary" (click)="addAddress()" [disabled]="!newAddress().trim()">
+          Add
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Addresses List -->
+  <h5>Your Addresses</h5>
+
+  @if (loading()) {
+    <div class="text-center py-4">
+      <div class="spinner-border spinner-border-sm text-primary"></div>
+      <span class="ms-2 text-muted">Loading...</span>
+    </div>
+  } @else if (addresses().length === 0) {
+    <p class="text-muted">No addresses saved. Add one above to use during checkout.</p>
+  } @else {
+    <div class="list-group">
+      @for (addr of addresses(); track addr.id) {
+        <div class="list-group-item d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center">
+            <span class="me-2">📍</span>
+            <span>{{ addr.address }}</span>
+          </div>
+          <button class="btn btn-outline-danger btn-sm" (click)="removeAddress(addr.id)">
+            Remove
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

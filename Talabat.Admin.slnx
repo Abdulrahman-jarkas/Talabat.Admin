@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Talabat.Admin.DFF/Talabat.Admin.DFF.csproj" />
+  <Project Path="Talabat.Admin.Frontend/Talabat.Admin.Frontend.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+</Solution>

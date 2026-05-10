@@ -1,0 +1,107 @@
+<div class="container mt-3">
+  <h2>Orders Management</h2>
+
+  @if (error) {
+    <div class="alert alert-danger alert-dismissible">{{ error }}
+      <button type="button" class="btn-close" (click)="error = null"></button>
+    </div>
+  }
+  @if (successMsg) {
+    <div class="alert alert-success alert-dismissible">{{ successMsg }}
+      <button type="button" class="btn-close" (click)="successMsg = null"></button>
+    </div>
+  }
+
+  <div class="mb-3 d-flex align-items-center gap-2">
+    @if (isAdmin) {
+      <select class="form-select form-select-sm" style="width: 200px" [(ngModel)]="filterShopId" (ngModelChange)="load()">
+        <option value="">All Shops</option>
+        @for (shop of shops; track shop.id) {
+          <option [value]="shop.id">{{ shop.name }}</option>
+        }
+      </select>
+    }
+    <button class="btn btn-outline-secondary btn-sm" (click)="load()">Refresh</button>
+  </div>
+
+  <!-- Order Detail Panel -->
+  @if (selectedOrder) {
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Order Details</span>
+        <button class="btn-close" (click)="closeDetail()"></button>
+      </div>
+      <div class="card-body">
+        <div class="row mb-2">
+          <div class="col-md-6"><strong>Order ID:</strong> {{ selectedOrder.orderId }}</div>
+          <div class="col-md-6"><strong>Customer:</strong> {{ selectedOrder.customerId }}</div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-md-6"><strong>Status:</strong> <span class="badge" [class]="getStatusBadgeClass(selectedOrder.status)">{{ selectedOrder.status }}</span></div>
+          <div class="col-md-6"><strong>Payment:</strong> {{ selectedOrder.paymentStatus }}</div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-md-6"><strong>Shop:</strong> {{ selectedOrder.shopId }}</div>
+          <div class="col-md-6"><strong>Address:</strong> {{ selectedOrder.addressId }}</div>
+        </div>
+        @if (selectedOrder.items.length > 0) {
+          <h6 class="mt-3">Items</h6>
+          <table class="table table-sm">
+            <thead><tr><th>Product ID</th><th>Quantity</th></tr></thead>
+            <tbody>
+              @for (item of selectedOrder.items; track item.productId) {
+                <tr><td>{{ item.productId }}</td><td>{{ item.quantity }}</td></tr>
+              }
+            </tbody>
+          </table>
+        }
+        <div class="mt-2">
+          @if (selectedOrder.status === 'Placed') {
+            <button class="btn btn-info btn-sm me-1" *hasPermission="'orders.ship'" (click)="shipOrder(selectedOrder.orderId)">Ship</button>
+            <button class="btn btn-danger btn-sm" *hasPermission="'orders.cancel'" (click)="cancelOrder(selectedOrder.orderId)">Cancel</button>
+          }
+          @if (selectedOrder.status === 'Shipped') {
+            <button class="btn btn-success btn-sm" *hasPermission="'orders.deliver'" (click)="deliverOrder(selectedOrder.orderId)">Deliver</button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Orders Table -->
+  @if (loading) {
+    <p>Loading...</p>
+  } @else {
+    <table class="table table-sm table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>Order ID</th>
+          <th>Status</th>
+          <th>Payment</th>
+          @if (isAdmin) { <th>Shop</th> }
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (o of orders; track o.orderId) {
+          <tr>
+            <td><small>{{ o.orderId }}</small></td>
+            <td><span class="badge" [class]="getStatusBadgeClass(o.status)">{{ o.status }}</span></td>
+            <td>{{ o.paymentStatus }}</td>
+            @if (isAdmin) { <td><small>{{ o.shopId }}</small></td> }
+            <td>
+              <button class="btn btn-outline-secondary btn-sm me-1" (click)="viewOrder(o)">View</button>
+              @if (o.status === 'Placed') {
+                <button class="btn btn-outline-info btn-sm me-1" *hasPermission="'orders.ship'" (click)="shipOrder(o.orderId)">Ship</button>
+                <button class="btn btn-outline-danger btn-sm" *hasPermission="'orders.cancel'" (click)="cancelOrder(o.orderId)">Cancel</button>
+              }
+              @if (o.status === 'Shipped') {
+                <button class="btn btn-outline-success btn-sm" *hasPermission="'orders.deliver'" (click)="deliverOrder(o.orderId)">Deliver</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

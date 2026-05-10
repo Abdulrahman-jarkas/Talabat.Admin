@@ -1,0 +1,97 @@
+<div class="text-center">
+  <h1 class="display-4">Welcome to Talabat Admin</h1>
+
+  @if (authenticated()) {
+    <p class="lead">Hello, {{ username() }}!</p>
+
+    <div class="card mx-auto mt-4" style="max-width: 600px;">
+      <div class="card-header">
+        <h5 class="mb-0">User Details</h5>
+      </div>
+      <div class="card-body text-start">
+        <div class="row mb-2">
+          <div class="col-4 fw-bold">Name:</div>
+          <div class="col-8">{{ username() }}</div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-4 fw-bold">Email:</div>
+          <div class="col-8">{{ email() }}</div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-4 fw-bold">User ID:</div>
+          <div class="col-8"><code>{{ sub() }}</code></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mx-auto mt-3" style="max-width: 600px;">
+      <div class="card-header">
+        <h5 class="mb-0">Account Details</h5>
+      </div>
+      <div class="card-body text-start">
+        @if (hasAccount()) {
+          <div class="row mb-2">
+            <div class="col-4 fw-bold">Account Name:</div>
+            <div class="col-8">{{ accountName() }}</div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-4 fw-bold">Account ID:</div>
+            <div class="col-8"><code>{{ accountId() }}</code></div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-4 fw-bold">Tenant Type:</div>
+            <div class="col-8">{{ accountTenantType() }}</div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-4 fw-bold">Tenant ID:</div>
+            <div class="col-8">{{ accountTenantId() ?? 'N/A' }}</div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-4 fw-bold">Version:</div>
+            <div class="col-8"><code>{{ accountVersion() }}</code></div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-4 fw-bold">Roles:</div>
+            <div class="col-8">
+              @for (role of roles(); track role) {
+                <span class="badge bg-info text-dark me-1">{{ role }}</span>
+              }
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-4 fw-bold">Permissions:</div>
+            <div class="col-8">
+              @for (perm of permissions(); track perm) {
+                <span class="badge bg-light text-dark border me-1 mb-1">{{ perm }}</span>
+              }
+            </div>
+          </div>
+        } @else {
+          <p class="text-muted mb-0">No account linked. You are using a sub-only token.</p>
+        }
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <h4>All Session Claims</h4>
+      <table class="table table-striped mt-3">
+        <thead>
+          <tr>
+            <th>Claim Type</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (claim of session(); track $index) {
+            <tr>
+              <td>{{ claim.type }}</td>
+              <td>{{ claim.value }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <p class="lead">Please <a href="/bff/login">login</a> to continue.</p>
+  }
+</div>

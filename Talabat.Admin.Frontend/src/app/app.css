@@ -1,0 +1,10 @@
+/* App component styles */
+.container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+main {
+  padding-top: 1rem;
+}

@@ -1,0 +1,63 @@
+<div class="container mt-3">
+  <h2>Shops Management</h2>
+
+  @if (error) {
+    <div class="alert alert-danger alert-dismissible">{{ error }}
+      <button type="button" class="btn-close" (click)="error = null"></button>
+    </div>
+  }
+  @if (successMsg) {
+    <div class="alert alert-success alert-dismissible">{{ successMsg }}
+      <button type="button" class="btn-close" (click)="successMsg = null"></button>
+    </div>
+  }
+
+  <div class="mb-3">
+    <button class="btn btn-primary btn-sm" *hasPermission="'shops.create'" (click)="openCreate()">+ New Shop</button>
+    <button class="btn btn-outline-secondary btn-sm ms-2" (click)="load()">Refresh</button>
+  </div>
+
+  @if (showForm) {
+    <div class="card mb-3">
+      <div class="card-header">{{ editingShopId ? 'Edit Shop' : 'New Shop' }}</div>
+      <div class="card-body">
+        <div class="mb-2">
+          <label class="form-label">Name</label>
+          <input class="form-control form-control-sm" [(ngModel)]="formName" maxlength="200" />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Description</label>
+          <textarea class="form-control form-control-sm" [(ngModel)]="formDescription" maxlength="500" rows="3"></textarea>
+        </div>
+        <button class="btn btn-success btn-sm" (click)="save()">Save</button>
+        <button class="btn btn-secondary btn-sm ms-2" (click)="cancelForm()">Cancel</button>
+      </div>
+    </div>
+  }
+
+  @if (loading) {
+    <p>Loading...</p>
+  } @else {
+    <table class="table table-sm table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (shop of shops; track shop.id) {
+          <tr>
+            <td>{{ shop.name }}</td>
+            <td>{{ shop.description }}</td>
+            <td>
+              <button class="btn btn-outline-primary btn-sm me-1" *hasPermission="'shops.update'" (click)="openEdit(shop)">Edit</button>
+              <button class="btn btn-outline-danger btn-sm" *hasPermission="'shops.delete'" (click)="deleteShop(shop)">Delete</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
